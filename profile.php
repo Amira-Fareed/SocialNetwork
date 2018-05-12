@@ -31,24 +31,24 @@ $otherUserName=$otherUserName[0]->username;
 
 
 
+if(isset($_POST['Add']))
+{
+    friends::add_friend($con, $currentUSerID, $otherUserId);
+}
+
+if(isset($_POST['remove']))
+{
+    friends::remove_friend($con, $currentUSerID, $otherUserId);
+}
+
+
+
 
 $friends=friends::get_friends($con, $currentUSerID);
 
 
 
 
-
-if(isset($_POST['Add']))
-{
-    friends::add_friend($con, $currentUSerID, $otherUserId);
-    header("Refresh:0");
-}
-
-if(isset($_POST['remove']))
-{
-    friends::remove_friend($con, $currentUSerID, $otherUserId);
-    header("Refresh:0");
-}
 
 
 if(isset($_POST['Createpost']))
@@ -69,23 +69,69 @@ if(isset($_POST['txtInput']))
        
 }
 
-if(isset($_GET['likepostid'])) {
-    $like_postId= $_GET['likepostid'] ;
+if(isset($_POST['likepostid'])) {
+    $like_postId= $_POST['likepostid'] ;
     posts::like_post($con,$currentUSerID,$like_postId);
 }
 
+if(isset($_POST['comment']))
+{
+    echo posts::createComment($con,$_POST['comment_body'],$_POST['comment'], $currentUSerID);
+}
 
-if(isset($_GET['likers'])) 
+if(isset($_POST['comments']))
+{
+    $post_id= $_POST['comments'] ;
+     $Comments = posts::display_comments($con,$post_id);
+    echo "<div onload = \"showModal()\"";
+           echo'<div class="modal fade" id="Modal" role="dialog" tabindex="-1" style="padding-top:100px; "overflow:scroll; height:400px;"" >
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <h4 class="modal-title">Comments</h4></div>
+                <div class="modal-body" style="max-height: 400px; overflow-y: auto">
+                ';
+                    
+                    if($Comments != false)
+                    {
+                       foreach ($Comments as $Comment) 
+                        {
+                              if($Comment['ID']==$currentUSerID)
+                            {
+                                echo "<blockquote><div> <a href=\"profile.php?id=".$Comment['ID']."\"> <h4 style=\" color:#337ab7; width:90%; text-transform: capitalize; font-size: 88%;\"> ~ ".$Comment['username']."</h4> </a> <button type=\"button\" class=\"close deletepost\" data-dismiss=\"modal\" aria-label=\"Close\" delete-commentid=".$Comment['comment_id'] ." postID = ".$post_id."><span aria-hidden=\"true\" style=\" font-size : 60%; color:red;\">Remove</span></button></button> </div> <p>".($Comment['body'])."</p><footer>Posted on ".
+                                $Comment['posted_at']."</blockquote><br> ";
+                            }
+
+                            else
+                            {
+                                echo "<blockquote><div> <a href=\"profile.php?id=".$Comment['ID']."\"> <h4 style=\" color:#337ab7; width:90%; text-transform: capitalize; font-size: 88%;\"> ~ ".$Comment['username']."</h4> </a> </div> <p>".($Comment['body'])."</p><footer>Posted on ".
+                                $Comment['posted_at']."</blockquote><br> ";
+                            }
+                    
+                            }
+                    }
+
+                echo' </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>';
+}
+
+if(isset($_POST['likers'])) 
     {
-        echo "<div onload = \"showlikersModal()\"";
-           echo'<div class="modal fade" id="likers" role="dialog" tabindex="-1" style="padding-top:100px;">
+        echo "<div onload = \"showModal()\"";
+           echo'<div class="modal fade" id="Modal" role="dialog" tabindex="-1" style="padding-top:100px;">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                     <h4 class="modal-title">Likers</h4></div>
                 <div class="modal-body" style="max-height: 400px; overflow-y: auto">';
-                    $like_postId= $_GET['likers'] ;
+                    $like_postId= $_POST['likers'] ;
                     $likers = posts::likers_IDs($con,$like_postId);
                     if($likers != false)
                     {
@@ -111,13 +157,18 @@ if(isset($_GET['likers']))
 
 
     }
-    
-?> 
+if(isset( $_GET['deletepostid']))
+{ 
+    $delete_postId= $_GET['deletepostid'] ;
+    $message = posts::delete_post($con,$currentUSerID,$delete_postId);
+}
 
-
-    <?php  
-        $delete_postId= $_GET['deletepostid'] ;
-        $message = posts::delete_post($con,$currentUSerID,$delete_postId);
+if(isset($_GET['deletecommentid']))
+{
+    $delete_commentId= $_GET['deletecommentid'] ;
+    $commentPostID = $_GET['postID'] ;
+    $message = posts::deleteComment ($con, $delete_commentId ,$commentPostID);
+}
 
 ?>
 
@@ -153,7 +204,7 @@ if(isset($_GET['likers']))
     <link rel="stylesheet" href="assets/css/untitled.css">
 </head>
 
-<body onload="showlikersModal()">
+<body onload="showModal()">
 
     <header class="hidden-sm hidden-md hidden-lg">
         <div class="searchbox">
@@ -257,7 +308,7 @@ if(isset($_GET['likers']))
                     </div>
 
                     <ul class="list-group" class="friendsList">
-                        <li  class="list-group-item"><span><strong>My Friends</strong></span> 
+                        <li class="list-group-item"><span><strong>My Friends</strong></span> 
                         
                         <br>
                          <?php  
@@ -268,7 +319,7 @@ if(isset($_GET['likers']))
                     </ul>
                 </div>
 
-            <div class="col-md-6">
+            <div class="col-md-7">
                 <?php
                 if($currentUSerID == $otherUserId)
                 {
@@ -278,7 +329,8 @@ if(isset($_GET['likers']))
                 ';
                 }
                 ?>
-            
+
+
                     <ul class="list-group">
                             <div class="timelineposts">
                             <?php posts::display_posts($con, $otherUserId, array($otherUserId)); ?>
@@ -290,24 +342,6 @@ if(isset($_GET['likers']))
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="commentsmodal" role="dialog" tabindex="-1" style="padding-top:100px;">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
-                    <h4 class="modal-title">Comments</h4></div>
-                <div class="modal-body" style="max-height: 400px; overflow-y: auto">
-                    <p>The content of your modal.</p>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
 
     <div class="modal fade" id="newpost" role="dialog" tabindex="-1" style="padding-top:100px;">
         <div class="modal-dialog" role="document">
@@ -351,33 +385,24 @@ if(isset($_GET['likers']))
                 $('#newpost').modal('show')
         }
 
-        function showCommentsModal(res) {
-                $('#commentsmodal').modal('show')
-                var output = "";
-                for (var i = 0; i < res.length; i++) {
-                        output += res[i].Comment;
-                        output += " ~ ";
-                        output += res[i].CommentedBy;
-                        output += "<hr />";
-                }
-
-                $('.modal-body').html(output)
-        }
 
         $('[delete-postid]').click(function() {
                  var buttonid = $(this).attr('delete-postid');
                  window.location.replace('profile.php?deletepostid='+ buttonid);
+                  });
+
+        $('[delete-commentid]').click(function() {
+                 var buttonid = $(this).attr('delete-commentid');
+                 var postid = $(this).attr('postID');
+                 window.location.replace('profile.php?deletecommentid='+ buttonid +'&&postID='+postid);
                              
         });
-
-        function showlikersModal() {
-                    $('#likers').modal('show');} 
-
-        
-
-
+       
+        function showModal() 
+        {
+            $('#Modal').modal('show');
+        } 
     </script>
-
 </body>
 
 </html>

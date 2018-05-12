@@ -39,11 +39,29 @@ class posts
 			return "log in to remove posts";	
 	}
 
+	public static function createComment ($con,$commentBody, $postId, $userId)
+	{
+		$sql = "INSERT INTO comments (post_id, user_id, body)
+			VALUES ('$postId','$userId','$commentBody')";	
+		$sql1 = mysqli_query($con,"UPDATE posts SET comments=comments+1 WHERE post_ID= '$postId'");		
+		$con->query($sql);
+		return mysqli_error($con);
+	}
+
+	public static function deleteComment ($con,$CommentId,$postId)
+	{
+		$sql = "DELETE FROM comments WHERE comment_id = $CommentId";
+		$sql1 = mysqli_query($con,"UPDATE posts SET comments=comments-1 WHERE post_ID= '$postId'");
+		$con->query($sql);
+	}
 
 
-
-
-
+	public static function display_comments($con,$post_id)
+	{
+		$sql = "SELECT comments.comment_id,comments.body,comments.posted_at, users.username,users.ID FROM comments, users 
+		WHERE post_id =$post_id AND comments.user_id = users.id";
+		return $con->query($sql);
+	}
 
 	public static function like_post($con, $user_id, $post_id)
 	{
@@ -70,7 +88,7 @@ class posts
 		foreach ($friends as $key) 
 		{ 
             
-			$posts=DB::select($con, "posts", array("post_ID" ,"body","posted_at", "likes"), "user_ID='".$key
+			$posts=DB::select($con, "posts", array("post_ID" ,"body","posted_at", "likes", "comments"), "user_ID='".$key
 			."'ORDER BY posted_at DESC");
 			foreach ($posts as $post ) 
 			{
@@ -86,25 +104,44 @@ class posts
 				if($key == $current_User)
 				{
 					echo"<blockquote><div> <a href=\"profile.php?id=".$key."\"> <h4 style=\" color:#337ab7; width:90%; text-transform: capitalize; font-size: 88%;\"> ~ ".$user_names->username."</h4> </a> <button type=\"button\" class=\"close deletepost\" data-dismiss=\"modal\" aria-label=\"Close\" delete-postid=".$post->post_ID ."><span aria-hidden=\"true\" style=\" font-size : 60%; color:red;\">Remove</span></button></button> </div> <p>".($post->body)."</p><footer>Posted on ".($post->posted_at)." 
-	                          <form validate method=\"get\" style=\" display: inline-block;\" >
+	                          <form validate method=\"post\" style=\" display: inline-block;\" >
 	                          <button onmouseover=\"this.style.color='".$othercolor."'\" onmouseout=\"this.style.color='".$color."'\" class=\"btn btn-default\" type=\"submit\" name=\"likepostid\" value=".$post->post_ID ." style=\"color:".$color."; background-image:url(&quot;none&quot;);background-color:transparent; \"> <i class=\"glyphicon glyphicon-heart\" data-aos=\"flip-right\" ></i><span></span></button></form>
 
-	                          <form validate method=\"get\" style=\" display: inline-block;\"> <button  class=\"btn btn-default\" type=\"submit\" name=\"likers\" value=".$post->post_ID ." style=\"color:#eb3b60;background-image:url(&quot;none&quot;);background-color:transparent;\" like-postid=".$post->post_ID ."> <i class=\"glyphicon \" data-aos=\"flip-right\"></i><span> ".($post->likes)." Likes </span></button></form>
+	                          <form validate method=\"post\" style=\" display: inline-block;\"> <button  class=\"btn btn-default\" type=\"submit\" name=\"likers\" value=".$post->post_ID ." style=\"color:#eb3b60;background-image:url(&quot;none&quot;);background-color:transparent;\" like-postid=".$post->post_ID ."> <i class=\"glyphicon \" data-aos=\"flip-right\"></i><span> ".($post->likes)." Likes </span></button></form>
 
 
-	                            <button class=\"btn btn-default comment\" type=\"button\" style=\"color:#eb3b60;background-image:url(&quot;none&quot;);background-color:transparent;\"><i class=\"glyphicon glyphicon-flash\" style=\"color:#f9d616;\"></i><span style=\"color:#f9d616;\"> Comments</span></button></footer></blockquote>";
+	                             <form class=\"Comments\" method=\"post\" style=\" display: inline-block;\"> <button class=\"btn btn-default comment\" name=\"comments\" type=\"submit\" value=".$post->post_ID." style=\"color:#eb3b60;background-image:url(&quot;none&quot;);background-color:transparent;\"><i class=\"glyphicon glyphicon-flash\" style=\"color:#f9d616;\"></i><span style=\"color:#f9d616;\">".($post->comments)." Comments</span></button></footer>
+	                             </form>
+
+								<form method=\"post\" >
+
+				                <textarea rows=\"2\"  style=\"width:80%; margin-top: 5px; resize:vertical; box-sizing: border-box; border: 2px solid #ccc; border-radius: 4px;\" name=\"comment_body\"></textarea>
+				                <button style=\"margin-left: 20px; margin-bottom: 20px; background-image:url(&quot;none&quot;); background-color:#da052b;color:#fff; border:none;box-shadow:none;text-shadow:none;opacity:0.9;\" type=\"submit\" name=\"comment\" value=".$post->post_ID." class=\"btn btn-default comment\">Comment</button>
+				                </form>     
+
+	                             </blockquote>
+
+
+	                             ";
                 }
 
                 else
                 {
                 	echo"<blockquote> <a href=\"profile.php?id=".$key."\"><h4 style=\" color:#337ab7; text-transform: capitalize; font-size: 88%;\"> ~ ".$user_names->username."</h4></a><p>".($post->body)."</p><footer>Posted on ".($post->posted_at)." 
 	                          
-	                          <form validate method=\"get\" style=\" display: inline-block;\"> 
+	                          <form validate method=\"post\" style=\" display: inline-block;\"> 
 	                          <button onmouseover=\"this.style.color='".$othercolor."'\" onmouseout=\"this.style.color='".$color."'\" class=\"btn btn-default\" type=\"submit\" name=\"likepostid\" value=".$post->post_ID ." style=\"color:".$color.";background-image:url(&quot;none&quot;);background-color:transparent;\" like-postid=".$post->post_ID ."> <i class=\"glyphicon glyphicon-heart\" data-aos=\"flip-right\"></i><span> </span></button></form>
 
-	                          <form validate method=\"get\" style=\" display: inline-block;\"> <button class=\"btn btn-default\" type=\"submit\" name=\"likers\" value=".$post->post_ID ." style=\"color:#eb3b60;background-image:url(&quot;none&quot;);background-color:transparent;\" > <i class=\"glyphicon \" data-aos=\"flip-right\"></i><span> ".($post->likes)." Likes </span></button></form>
+	                          <form validate method=\"post\" style=\" display: inline-block;\"> <button class=\"btn btn-default\" type=\"submit\" name=\"likers\" value=".$post->post_ID ." style=\"color:#eb3b60;background-image:url(&quot;none&quot;);background-color:transparent;\" > <i class=\"glyphicon \" data-aos=\"flip-right\"></i><span> ".($post->likes)." Likes </span></button></form>
 
-	                            <button class=\"btn btn-default comment\" type=\"button\" style=\"color:#eb3b60;background-image:url(&quot;none&quot;);background-color:transparent;\"><i class=\"glyphicon glyphicon-flash\" style=\"color:#f9d616;\"></i><span style=\"color:#f9d616;\"> Comments</span></button></footer></blockquote>";
+	                           <form class=\"Comments\" method=\"post\" style=\" display: inline-block;\"> <button class=\"btn btn-default comment\" name=\"comments\" type=\"submit\" value=".$post->post_ID." style=\"color:#eb3b60;background-image:url(&quot;none&quot;);background-color:transparent;\"><i class=\"glyphicon glyphicon-flash\" style=\"color:#f9d616;\"></i><span style=\"color:#f9d616;\">".($post->comments)." Comments</span></button></footer></form>
+
+	                           <form method=\"post\" >
+				                <textarea rows=\"2\"  style=\"width:80%; resize:vertical; box-sizing: border-box; border: 2px solid #ccc; border-radius: 4px;\" name=\"comment_body\"></textarea>
+				                <button style=\"margin-left: 20px; margin-bottom: 20px; background-image:url(&quot;none&quot;); background-color:#da052b;color:#fff; border:none;box-shadow:none;text-shadow:none;opacity:0.9;\" type=\"submit\" name=\"comment\" value=".$post->post_ID." class=\"btn btn-default comment\">Comment</button></form>
+
+	                             </blockquote>
+	                           ";
 
                 }
 			}
