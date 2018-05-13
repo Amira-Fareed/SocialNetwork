@@ -4,13 +4,13 @@ $current_User=$_SESSION['loggedin'];
 class posts
 {
 
-	public static function create_post($con, $user_id, $body)
+	public static function create_post($con, $user_id, $body,$group_id)
 	{
 		global $current_User;
 		if($user_id==$current_User)
 		{
 
-			$data=array("user_ID"=>$user_id, "body"=>$body);
+			$data=array("user_ID"=>$user_id, "body"=>$body,"group_ID"=>$group_id);
 			if(DB::insert($con, "posts", $data)===true)
 				{
 					return "post created successfuly!";
@@ -80,7 +80,7 @@ class posts
 		}
 	}
 
-	public static function display_posts($con, $user_id, $friends)
+	public static function display_posts($con, $user_id, $friends,$group_id)
 
 	{
 		global $current_User;
@@ -88,8 +88,7 @@ class posts
 		foreach ($friends as $key) 
 		{ 
             
-			$posts=DB::select($con, "posts", array("post_ID" ,"body","posted_at", "likes", "comments"), "user_ID='".$key
-			."'ORDER BY posted_at DESC");
+			$posts=DB::select($con, "posts", array("post_ID" ,"body","posted_at", "likes", "comments" ,"group_ID"), "user_ID='".$key."' AND group_ID='".$group_id."' ORDER BY posted_at DESC");
 			foreach ($posts as $post ) 
 			{
 				$query="SELECT username FROM posts join users ON posts.user_ID = users.ID WHERE posts.post_ID=".$post->post_ID;

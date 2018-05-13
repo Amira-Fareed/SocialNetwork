@@ -54,7 +54,7 @@ $friends=friends::get_friends($con, $currentUSerID);
 if(isset($_POST['Createpost']))
 {
     $body=$_POST['postbody'];
-    $message = posts::create_post($con, $currentUSerID, $body);
+    $message = posts::create_post($con, $currentUSerID, $body,0);
     echo '<script  type="text/javascript"> function showMessage() {confirm("'.$message.'");} showMessage();</script>';
 
 }
@@ -333,7 +333,7 @@ if(isset($_GET['deletecommentid']))
 
                     <ul class="list-group">
                             <div class="timelineposts">
-                            <?php posts::display_posts($con, $otherUserId, array($otherUserId)); ?>
+                            <?php posts::display_posts($con, $otherUserId, array($otherUserId),0); ?>
 
                             </div>
                     </ul>

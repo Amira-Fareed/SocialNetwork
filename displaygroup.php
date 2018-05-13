@@ -6,8 +6,11 @@ $currentUSerID=$_SESSION['loggedin'];
 if($currentUSerID=="")
     header("Location:login.php");
 
+$groupId= $_GET['id'] ;
 include 'Classes/friends.php';
 include 'Classes/posts.php';
+include 'Classes/group.php';
+
 $dbhost = "localhost";
 $dbuser = "root";
 $dbpass = "";
@@ -16,17 +19,39 @@ $con = new mysqli($dbhost, $dbuser, $dbpass, $dbname);
 if ($con->connect_error) {
    die("Connection failed: " . $con->connect_error); }
 
-$friends=friends::get_friends($con, $currentUSerID);
+if($groupId == "" )
+{
+    header("Location:groups.php");
+}
 
-array_push($friends, $currentUSerID) ;
+
+
+$admin_ID = DB::select($con,"groups",array("adminID"),"groupID='".$groupId."'");
+$admin_ID = $admin_ID[0]->adminID;
+$group_users=group::get_users($con, $groupId);
+
+
+
+
+
+
+if(isset($_POST['Createpost']))
+{
+    $body=$_POST['postbody'];
+    $message = posts::create_post($con, $currentUSerID, $body,0);
+    echo '<script  type="text/javascript"> function showMessage() {confirm("'.$message.'");} showMessage();</script>';
+
+}
 
 
 if(isset($_POST['txtInput']))
 {
-    $InputTxt=$_POST['txtInput'];
-    header("Location:search.php?txt=".$InputTxt."");       
-}
+        $InputTxt=$_POST['txtInput']; 
 
+         header("Location:search.php?txt=".$InputTxt."");
+
+       
+}
 
 if(isset($_POST['likepostid'])) {
     $like_postId= $_POST['likepostid'] ;
@@ -35,7 +60,6 @@ if(isset($_POST['likepostid'])) {
 
 if(isset($_POST['comment']))
 {
-
     echo posts::createComment($con,$_POST['comment_body'],$_POST['comment'], $currentUSerID);
 }
 
@@ -51,13 +75,13 @@ if(isset($_POST['comments']))
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
                     <h4 class="modal-title">Comments</h4></div>
                 <div class="modal-body" style="max-height: 400px; overflow-y: auto">
-';
+                ';
                     
                     if($Comments != false)
                     {
                        foreach ($Comments as $Comment) 
                         {
-                            if($Comment['ID']==$currentUSerID)
+                              if($Comment['ID']==$currentUSerID)
                             {
                                 echo "<blockquote><div> <a href=\"profile.php?id=".$Comment['ID']."\"> <h4 style=\" color:#337ab7; width:90%; text-transform: capitalize; font-size: 88%;\"> ~ ".$Comment['username']."</h4> </a> <button type=\"button\" class=\"close deletepost\" data-dismiss=\"modal\" aria-label=\"Close\" delete-commentid=".$Comment['comment_id'] ." postID = ".$post_id."><span aria-hidden=\"true\" style=\" font-size : 60%; color:red;\">Remove</span></button></button> </div> <p>".($Comment['body'])."</p><footer>Posted on ".
                                 $Comment['posted_at']."</blockquote><br> ";
@@ -68,6 +92,7 @@ if(isset($_POST['comments']))
                                 echo "<blockquote><div> <a href=\"profile.php?id=".$Comment['ID']."\"> <h4 style=\" color:#337ab7; width:90%; text-transform: capitalize; font-size: 88%;\"> ~ ".$Comment['username']."</h4> </a> </div> <p>".($Comment['body'])."</p><footer>Posted on ".
                                 $Comment['posted_at']."</blockquote><br> ";
                             }
+                    
                             }
                     }
 
@@ -79,7 +104,7 @@ if(isset($_POST['comments']))
         </div>
     </div>';
 }
-    
+
 if(isset($_POST['likers'])) 
     {
         echo "<div onload = \"showModal()\"";
@@ -116,7 +141,6 @@ if(isset($_POST['likers']))
 
 
     }
-
 if(isset( $_GET['deletepostid']))
 { 
     $delete_postId= $_GET['deletepostid'] ;
@@ -129,10 +153,28 @@ if(isset($_GET['deletecommentid']))
     $commentPostID = $_GET['postID'] ;
     $message = posts::deleteComment ($con, $delete_commentId ,$commentPostID);
 }
+
+group::display_users($con,$currentUSerID,$groupId);
+
+
 ?>
 
+
 <!DOCTYPE html>
-<html > 
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>friends</title>
+</head>
+<body>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html>
 
 <head>
     <meta charset="utf-8">
@@ -141,19 +183,24 @@ if(isset($_GET['deletecommentid']))
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/fonts/ionicons.min.css">
     <link rel="stylesheet" href="assets/css/Footer-Dark.css">
+    <link rel="stylesheet" href="assets/css/Highlight-Clean.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.css">
     <link rel="stylesheet" href="assets/css/Login-Form-Clean.css">
     <link rel="stylesheet" href="assets/css/Navigation-Clean1.css">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/untitled.css">
 </head>
+
 <body onload="showModal()">
+
     <header class="hidden-sm hidden-md hidden-lg">
         <div class="searchbox">
             <form validate method="post">
                 <h1 class="text-left">Social Network</h1>
                 <div class="searchbox"><i class="glyphicon glyphicon-search"></i>
-                    <input class="form-control sbox" name="txtInput"  >
+                    <input class="form-control sbox" type="text"  name="txtInput">
+                    <ul class="list-group autocomplete" style="position:absolute;width:100%; z-index: 100">
+                    </ul>
                 </div>
                 <div class="dropdown">
                     <button class="btn btn-link dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">MENU <span class="caret"></span></button>
@@ -177,13 +224,13 @@ if(isset($_GET['deletecommentid']))
                 <div class="collapse navbar-collapse" id="navcol-1">
                     <form class="navbar-form navbar-left" validate method="post">
                         <div class="searchbox"><i class="glyphicon glyphicon-search"></i>
-                            <input class="form-control sbox"  name="txtInput" type="text">
+                            <input class="form-control sbox" type="text"  name="txtInput">
                             <ul class="list-group autocomplete" style="position:absolute;width:100%; z-index:100">
                             </ul>
                         </div>
                     </form>
                     <ul class="nav navbar-nav hidden-md hidden-lg navbar-right">
-                        <li class="active" role="presentation"><a href="timeline.php">Timeline</a></li>
+                        <li  role="presentation"><a href="timeline.php">Timeline</a></li>
                         <li class="dropdown open"><a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true" href="#">User <span class="caret"></span></a>
                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                 <li role="presentation"><a href="profile.php">My Profile</a></li>
@@ -193,23 +240,112 @@ if(isset($_GET['deletecommentid']))
                         </li>
                     </ul>
                     <ul class="nav navbar-nav hidden-xs hidden-sm navbar-right">
-                        <li class="active" role="presentation"><a href="profile.php">Timeline</a></li>
-                        <li role="presentation"><a href="profile.php">Profile</a></li>
+                        <li role="presentation"><a href="timeline.php">Timeline</a></li>
+                        <?php 
+                            if ($currentUSerID != $otherUserId)
+                                echo'<li role="presentation"><a href="profile.php">Profile</a></li>';
+
+                            else
+                                echo'<li class="active" role="presentation"><a href="profile.php">Profile</a></li>';
+                        ?>
+                        
                         <li role="presentation"><a href="logout.php">Logout</a></li>
                     </ul>
                 </div>
             </div>
         </nav>
     </div>
-    <div  class="col-md-8" class="container" style="margin-bottom: 60px; margin-left: 10%;">
-        <h1>Timeline </h1>
-        <div class="timelineposts" >
+    <div class="container" style="margin-bottom: 60px;">
+        <h1 style="text-transform: capitalize;"><?php $group_name = DB::select($con,"groups",array("name"),"groupID='".$groupId."'");echo $group_name[0]->name; ?> </h1></div>
+    <div>
+        <div class="container" style="margin-bottom: 60px;">
+            <div class="row">
 
-            <?php posts::display_posts($con, $currentUSerID, $friends,0); ?>
 
+                <div class="col-md-3" style="max-height: 370px; overflow-y: auto">
+
+                    <div >
+                        <?php
+                            if($currentUSerID == $admin_ID)
+                            {
+                                
+                                    echo ' 
+                                    <form validate method="post"><button class="btn btn-default" validate method="post" action="profile.php"  type="submit" name="Add" value="Add" style="width:100%;background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;" id="Add"  >Add User</button>
+                                    <ul class="list-group"></ul> <form>';
+                             
+                                    echo ' 
+                                    <form validate method="post" ><button class="btn btn-default" type="submit" name="remove" value="remove"  style="width:100%;background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;" >Remove User</button>
+                                    <ul class="list-group"></ul> </form>';
+
+                            }
+                        ?>
+                    </div>
+
+                    <ul class="list-group" class="friendsList">
+                        <li class="list-group-item"><span><strong>Group Users</strong></span> 
+                        
+                        <br>
+                         <?php  
+                            for($i=0;$i<sizeof($group_users);$i++)
+                                    {
+                                        $username=DB::select($con, "users", array("username"), "ID='".$group_users[$i]
+                                        ."'");
+                                        echo '<a href="profile.php?id='.$group_users[$i].'"><li class="list-group-item" user-id ='. $group_users[$i].'> <p style="text-transform: capitalize;">'. $username[0]->username.'</p></li></a>';
+                                        
+                                    }
+                         ?>
+                              
+                        </li>
+                    </ul>
+                </div>
+
+            <div class="col-md-7">
+                <?php
+                if($currentUSerID == $otherUserId)
+                {
+                    echo ' 
+                    <button class="btn btn-default" type="button" style="width:100%;background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;" onclick="showNewPostModal()">NEW POST</button>
+                    <ul class="list-group"></ul>
+                ';
+                }
+                ?>
+
+
+                    <ul class="list-group">
+                            <div class="timelineposts">
+                            <?php posts::display_posts($con, $otherUserId, array($otherUserId),0); ?>
+
+                            </div>
+                    </ul>
+                </div>
+                
+            </div>
         </div>
     </div>
-    <!-- Comments -->    
+
+    <div class="modal fade" id="newpost" role="dialog" tabindex="-1" style="padding-top:100px;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
+                    <h4 class="modal-title">New Post</h4>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto">
+                        <form action="profile.php?username=<?php echo $username; ?>" method="post" enctype="multipart/form-data">
+                                <textarea name="postbody"  rows="8" cols="80"></textarea>
+
+
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" name="Createpost" value="Post" class="btn btn-default" type="button" style="background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;">
+                    <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <div class="footer-dark navbar-fixed-bottom" style="position: fixed;">
         <footer>
             <div class="container">
@@ -222,31 +358,31 @@ if(isset($_GET['deletecommentid']))
     <script src="assets/js/bs-animation.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.js"></script>
 
-    <script type="text/javascript">
+        <script type="text/javascript">
+
+
+        function showNewPostModal() {
+                $('#newpost').modal('show')
+        }
+
+
         $('[delete-postid]').click(function() {
                  var buttonid = $(this).attr('delete-postid');
-                 window.location.replace('timeline.php?deletepostid='+ buttonid);
-                             
-        });
+                 window.location.replace('profile.php?deletepostid='+ buttonid);
+                  });
 
-         $('[delete-commentid]').click(function() {
+        $('[delete-commentid]').click(function() {
                  var buttonid = $(this).attr('delete-commentid');
                  var postid = $(this).attr('postID');
-                 window.location.replace('timeline.php?deletecommentid='+ buttonid +'&&postID='+postid);
+                 window.location.replace('profile.php?deletecommentid='+ buttonid +'&&postID='+postid);
                              
         });
-
+       
         function showModal() 
-
-
-
         {
             $('#Modal').modal('show');
         } 
-       
-        
     </script>
-
 </body>
 
 </html>
