@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: May 12, 2018 at 02:15 AM
+-- Generation Time: May 13, 2018 at 10:39 PM
 -- Server version: 5.7.21
 -- PHP Version: 5.6.35
 
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `comments` (
   `body` text NOT NULL,
   `posted_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`comment_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `comments`
@@ -45,7 +45,11 @@ CREATE TABLE IF NOT EXISTS `comments` (
 INSERT INTO `comments` (`comment_id`, `post_id`, `user_id`, `body`, `posted_at`) VALUES
 (25, 3, 1, 'hihihihi', '2018-05-12 01:36:26'),
 (26, 4, 1, 'ss', '2018-05-12 01:42:00'),
-(28, 44, 10, 'n', '2018-05-12 02:07:00');
+(28, 44, 10, 'n', '2018-05-12 02:07:00'),
+(29, 40, 11, 'PM PM PM', '2018-05-12 07:34:18'),
+(30, 45, 11, 'Shit', '2018-05-12 07:35:45'),
+(31, 49, 11, '7anon> Amira', '2018-05-12 07:45:57'),
+(32, 49, 11, 'then 7anon = ???', '2018-05-12 07:46:46');
 
 -- --------------------------------------------------------
 
@@ -82,6 +86,51 @@ INSERT INTO `friends` (`friends_ID`, `user_ID`, `friend_ID`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `groups`
+--
+
+DROP TABLE IF EXISTS `groups`;
+CREATE TABLE IF NOT EXISTS `groups` (
+  `groupID` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `name` varchar(60) NOT NULL,
+  `adminID` int(11) UNSIGNED NOT NULL,
+  PRIMARY KEY (`groupID`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `groups`
+--
+
+INSERT INTO `groups` (`groupID`, `name`, `adminID`) VALUES
+(4, 'eee', 1),
+(3, '1', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `group_users`
+--
+
+DROP TABLE IF EXISTS `group_users`;
+CREATE TABLE IF NOT EXISTS `group_users` (
+  `ID` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `group_ID` int(11) UNSIGNED NOT NULL,
+  `user_ID` int(11) UNSIGNED NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `group_users`
+--
+
+INSERT INTO `group_users` (`ID`, `group_ID`, `user_ID`) VALUES
+(1, 3, 1),
+(2, 4, 1),
+(3, 3, 3);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `posts`
 --
 
@@ -93,23 +142,25 @@ CREATE TABLE IF NOT EXISTS `posts` (
   `posted_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `likes` int(11) DEFAULT '0',
   `comments` int(11) UNSIGNED NOT NULL DEFAULT '0',
+  `group_ID` int(11) UNSIGNED DEFAULT '0',
   PRIMARY KEY (`post_ID`),
   KEY `user_ID` (`user_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=46 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `posts`
 --
 
-INSERT INTO `posts` (`post_ID`, `user_ID`, `body`, `posted_at`, `likes`, `comments`) VALUES
-(3, 3, 'my name is mohamed', '2018-04-30 02:43:27', 1, 1),
-(4, 2, 'my name is ahmed', '2018-04-30 02:44:56', 2, 1),
-(5, 1, 'my name is eslam', '2018-04-30 02:46:06', 1, 0),
-(9, 1, 'my name is eslam', '2018-04-30 15:52:24', 2, 0),
-(40, 4, 'am am am ', '2018-05-07 03:00:38', 2, 0),
-(41, 7, 'hii', '2018-05-11 22:03:58', 0, 0),
-(42, 7, 'no no ', '2018-05-11 22:04:18', 0, 0),
-(44, 10, '', '2018-05-12 02:05:05', 1, 1);
+INSERT INTO `posts` (`post_ID`, `user_ID`, `body`, `posted_at`, `likes`, `comments`, `group_ID`) VALUES
+(3, 3, 'my name is mohamed', '2018-04-30 02:43:27', 1, 1, 0),
+(4, 2, 'my name is ahmed', '2018-04-30 02:44:56', 2, 1, 0),
+(5, 1, 'my name is eslam', '2018-04-30 02:46:06', 1, 0, 0),
+(9, 1, 'my name is eslam', '2018-04-30 15:52:24', 2, 0, 0),
+(40, 4, 'am am am ', '2018-05-07 03:00:38', 3, 1, 0),
+(41, 7, 'hii', '2018-05-11 22:03:58', 0, 0, 0),
+(42, 7, 'no no ', '2018-05-11 22:04:18', 0, 0, 0),
+(44, 10, '', '2018-05-12 02:05:05', 1, 1, 0),
+(45, 1, 'emi w7sha', '2018-05-13 15:52:25', 0, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -123,7 +174,7 @@ CREATE TABLE IF NOT EXISTS `post_likes` (
   `post_ID` int(11) UNSIGNED NOT NULL,
   `user_ID` int(11) UNSIGNED NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM AUTO_INCREMENT=38 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=40 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `post_likes`
@@ -139,7 +190,9 @@ INSERT INTO `post_likes` (`ID`, `post_ID`, `user_ID`) VALUES
 (30, 5, 1),
 (35, 9, 1),
 (33, 40, 1),
-(37, 44, 10);
+(37, 44, 10),
+(38, 40, 11),
+(39, 49, 11);
 
 -- --------------------------------------------------------
 
@@ -154,7 +207,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(60) DEFAULT NULL,
   `email` text,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `users`
@@ -170,7 +223,8 @@ INSERT INTO `users` (`ID`, `username`, `password`, `email`) VALUES
 (7, 'alaa', 'alaa', 'alaa@gmail.com'),
 (8, '', '', ''),
 (9, '', '', ''),
-(10, 'amira', 'amira', 'amira@yahoo.com');
+(10, 'amira', 'amira', 'amira@yahoo.com'),
+(11, 'Mohamed', 'habla', 'Fareeda.Fareed@7anon.Commadyntnasr');
 
 --
 -- Constraints for dumped tables
