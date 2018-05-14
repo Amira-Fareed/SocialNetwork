@@ -147,10 +147,10 @@ class group
 		$posts=DB::select($con, "posts", array("user_ID","post_ID" ,"body","posted_at", "likes", "comments"), "group_ID='".$group_id."' ORDER BY posted_at DESC");
 			foreach ($posts as $post ) 
 			{
-				$query="SELECT username FROM users WHERE ID = ".$post->user_ID."";
+				$query="SELECT username FROM posts join users ON posts.user_ID = users.ID WHERE posts.post_ID=".$post->post_ID;
 				$result = mysqli_query($con, $query);
 				$user_names = $result->fetch_object();
-				$res=mysqli_query($con,"SELECT ID FROM post_likes WHERE post_ID='$post->post_ID' AND user_ID=".$post->user_ID."");
+				$res=mysqli_query($con,"SELECT ID FROM post_likes WHERE post_ID='$post->post_ID' AND user_ID='$current_User'");
 				if($res->num_rows == 0)
 					{$color = "#c5c5c5"; $othercolor = "#eb3b60";}
 				else

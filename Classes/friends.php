@@ -82,6 +82,7 @@ class friends
 		else
 			echo "log in to display you friends";
 	}
+	
 	public static function get_friends($con, $user_id)
 	{
 		$friends_IDs=DB::select($con, "friends", array("friend_ID"), "user_ID='".$user_id."'");

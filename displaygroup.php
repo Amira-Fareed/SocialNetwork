@@ -45,6 +45,18 @@ $admin_ID = DB::select($con,"groups",array("adminID"),"groupID='".$groupId."'");
 $admin_ID = $admin_ID[0]->adminID;
 $group_users=group::get_users($con, $groupId);
 
+/////////////checking if user is a member in the group ////////////
+$check =0;
+for($i=0;$i<sizeof($group_users);$i++)
+{
+    if($group_users[$i] == $currentUSerID)
+        $check = 1;
+}
+
+if($check == 0)
+    header("Location:groups.php");
+
+/////////////////////////////////////////
 
 if(isset($_POST['Createpost']))
 {
@@ -197,7 +209,7 @@ if(isset($_GET['deletecommentid']))
     <?php include "header.php";?>
     <div class="container" style="margin-bottom: 60px;">
 
-        <h1 style="text-transform: capitalize;"><?php echo $group_name ?> </h1></div>
+        <h1 style="text-transform: capitalize;"><?php echo $group_name ?> </h1>
     <div>
         <div class="container" style="margin-bottom: 60px;">
             <div class="row">
@@ -223,13 +235,19 @@ if(isset($_GET['deletecommentid']))
                     <ul class="list-group" class="friendsList">
                         <li class="list-group-item"><span><strong>Group Members</strong></span> 
                         
-                        <br>
+                        <br><br>
                          <?php  
                             for($i=0;$i<sizeof($group_users);$i++)
                                     {
                                         $username=DB::select($con, "users", array("username"), "ID='".$group_users[$i]
                                         ."'");
-                                        echo '<form validate method ="post"><li class="list-group-item" user-id ='. $group_users[$i].'><a href="profile.php?id='.$group_users[$i].'"> <span style="text-transform: capitalize;">'. $username[0]->username.'</span></a><button style="float:right;" name="deleteuser" value ="'.$group_users[$i].'">Remove</button></li></form>';
+                                        echo '<form validate method ="post"><li class="list-group-item" user-id ='. $group_users[$i].'><a href="profile.php?id='.$group_users[$i].'"> <span style="text-transform: capitalize;">'. $username[0]->username.'</span></a>';
+                                        if($currentUSerID== $admin_ID)
+                                        {
+                                            echo'<button style="float:right;" name="deleteuser" value ="'.$group_users[$i].'">Remove</button>';
+                                        }
+
+                                        echo'</li></form>';
 
                                         
                                     }
