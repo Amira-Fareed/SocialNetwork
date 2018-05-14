@@ -31,8 +31,21 @@ $admin_ID = $admin_ID[0]->adminID;
 $group_users=group::get_users($con, $groupId);
 
 
+if(isset( $_POST['deleteuser']))
+{ 
+    $delete_userId= $_POST['deleteuser'] ;
+    $message = group::delete_user($con,$currentUSerID,$delete_userId,$groupId);
+}
 
+if(isset( $_POST['adduser']))
+{ 
+    $add_userId= $_POST['adduser'] ;
+    $message = group::add_user($con,$currentUSerID,$add_userId,$groupId);
+}
 
+$admin_ID = DB::select($con,"groups",array("adminID"),"groupID='".$groupId."'");
+$admin_ID = $admin_ID[0]->adminID;
+$group_users=group::get_users($con, $groupId);
 
 
 if(isset($_POST['Createpost']))
@@ -154,8 +167,6 @@ if(isset($_GET['deletecommentid']))
     $message = posts::deleteComment ($con, $delete_commentId ,$commentPostID);
 }
 
-group::display_users($con,$currentUSerID,$groupId);
-
 
 ?>
 
@@ -256,7 +267,7 @@ group::display_users($con,$currentUSerID,$groupId);
         </nav>
     </div>
     <div class="container" style="margin-bottom: 60px;">
-        <h1 style="text-transform: capitalize;"><?php $group_name = DB::select($con,"groups",array("name"),"groupID='".$groupId."'");echo $group_name[0]->name; ?> </h1></div>
+        <h1 style="text-transform: capitalize;"><?php $group_name = DB::select($con,"groups",array("name"),"groupID='".$groupId."'");echo $group_name[0]->name; ?> </h1>
     <div>
         <div class="container" style="margin-bottom: 60px;">
             <div class="row">
@@ -270,18 +281,15 @@ group::display_users($con,$currentUSerID,$groupId);
                             {
                                 
                                     echo ' 
-                                    <form validate method="post"><button class="btn btn-default" validate method="post" action="profile.php"  type="submit" name="Add" value="Add" style="width:100%;background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;" id="Add"  >Add User</button>
-                                    <ul class="list-group"></ul> <form>';
+                                    <button class="btn btn-default" validate method="post" action="profile.php"  type="submit" name="Add" value="Add" style="width:100%;background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;" id="Add" onclick="showUsersModal()" >Add User</button>
+                                    <ul class="list-group"></ul>';
                              
-                                    echo ' 
-                                    <form validate method="post" ><button class="btn btn-default" type="submit" name="remove" value="remove"  style="width:100%;background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;" >Remove User</button>
-                                    <ul class="list-group"></ul> </form>';
 
                             }
                         ?>
                     </div>
 
-                    <ul class="list-group" class="friendsList">
+                    <ul class="list-group" class="usersList">
                         <li class="list-group-item"><span><strong>Group Users</strong></span> 
                         
                         <br>
@@ -290,7 +298,8 @@ group::display_users($con,$currentUSerID,$groupId);
                                     {
                                         $username=DB::select($con, "users", array("username"), "ID='".$group_users[$i]
                                         ."'");
-                                        echo '<a href="profile.php?id='.$group_users[$i].'"><li class="list-group-item" user-id ='. $group_users[$i].'> <p style="text-transform: capitalize;">'. $username[0]->username.'</p></li></a>';
+                                        echo '<form validate method ="post"><li class="list-group-item" user-id ='. $group_users[$i].'><a href="profile.php?id='.$group_users[$i].'"> <span style="text-transform: capitalize;">'. $username[0]->username.'</span></a><button style="float:right;" name="deleteuser" value ="'.$group_users[$i].'">Remove</button></li></form>';
+
                                         
                                     }
                          ?>
@@ -345,6 +354,25 @@ group::display_users($con,$currentUSerID,$groupId);
         </div>
     </div>
 
+    <div class="modal fade" id="add_users" role="dialog" tabindex="-1" style="padding-top:100px;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
+                    <h4 class="modal-title">ADD USERS</h4>
+                </div>
+                <div style="max-height: 400px; overflow-y: auto">
+                        
+                <?php group::display_users($con,$currentUSerID,$groupId);?>
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div class="footer-dark navbar-fixed-bottom" style="position: fixed;">
         <footer>
@@ -363,6 +391,10 @@ group::display_users($con,$currentUSerID,$groupId);
 
         function showNewPostModal() {
                 $('#newpost').modal('show')
+        }
+
+        function showUsersModal() {
+                $('#add_users').modal('show')
         }
 
 

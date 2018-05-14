@@ -102,7 +102,7 @@ class group
 				{
 					$username=DB::select($con, "users", array("username"), "ID='".$friends_IDs[$i]->friend_ID
 					."'");
-					echo '<a href="profile.php?id='.$friends_IDs[$i]->friend_ID .'"><li class="list-group-item" user-id ='. $friends_IDs[$i]->friend_ID.'> <span>'. $username[0]->username.'</span></li></a>';
+					echo '<form validate method ="post"><li class="list-group-item" user-id ='. $friends_IDs[$i]->friend_ID.'><a href="profile.php?id='.$friends_IDs[$i]->friend_ID .'"> <span>'. $username[0]->username.'</span> </a><button style="float:right;"name="adduser" value ="'.$friends_IDs[$i]->friend_ID .'">ADD</button></li></form> ';
 				}
 				return true;
 			}
@@ -111,6 +111,35 @@ class group
 		}
 		else
 			echo "log in to display you friends";
+	}
+
+	public static function delete_user($con,$currentUSerID,$delete_userId,$groupId)
+	{
+		global $current_User;
+		if($currentUSerID==$current_User)
+		{
+			if(DB::delete($con, "group_users", array("user_ID"=>$delete_userId, "group_ID" =>$groupId))==true)
+				{
+					return "user deleted successfuly!";
+					
+				}
+			else 
+				return "Login first";
+		}
+		else
+			return "log in to remove user";
+	}
+
+
+	public static function add_user($con,$currentUSerID,$add_userId,$groupId)
+	{
+		$data = array("user_ID"=>$add_userId,"group_ID" =>$groupId);
+		if(DB::insert($con,"group_users",$data)==true)
+		{
+			return "user added successfully!!";
+		}
+		else
+			return"Something went wrong";
 	}
 	
 
