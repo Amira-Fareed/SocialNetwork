@@ -115,16 +115,28 @@ class group
 
 	public static function delete_user($con,$currentUSerID,$delete_userId,$groupId)
 	{
+		$admin_ID = DB::select($con,"groups",array("adminID"),"groupID='".$groupId."'");
+		$admin_ID = $admin_ID[0]->adminID;
 		global $current_User;
 		if($currentUSerID==$current_User)
 		{
-			if(DB::delete($con, "group_users", array("user_ID"=>$delete_userId, "group_ID" =>$groupId))==true)
-				{
-					return "user deleted successfuly!";
-					
-				}
-			else 
-				return "Login first";
+			if($delete_userId != $admin_ID)
+			{
+				if(DB::delete($con, "group_users", array("user_ID"=>$delete_userId, "group_ID" =>$groupId))==true)
+					{
+						return "user deleted successfuly!";
+						
+					}
+				else 
+					return "something went wrong";
+			}
+			else
+			{
+				DB::delete($con, "group_users", array("group_ID" =>$groupId));
+				DB::delete($con, "groups", array("groupID" =>$groupId));
+				DB::delete($con, "posts", array("group_ID" =>$groupId));
+
+			}
 		}
 		else
 			return "log in to remove user";
@@ -147,10 +159,10 @@ class group
 		$posts=DB::select($con, "posts", array("user_ID","post_ID" ,"body","posted_at", "likes", "comments"), "group_ID='".$group_id."' ORDER BY posted_at DESC");
 			foreach ($posts as $post ) 
 			{
-				$query="SELECT username FROM posts join users ON posts.user_ID = users.ID WHERE posts.post_ID=".$post->post_ID;
+				$query="SELECT username FROM users WHERE ID = ".$post->user_ID."";
 				$result = mysqli_query($con, $query);
 				$user_names = $result->fetch_object();
-				$res=mysqli_query($con,"SELECT ID FROM post_likes WHERE post_ID='$post->post_ID' AND user_ID='$current_User'");
+				$res=mysqli_query($con,"SELECT ID FROM post_likes WHERE post_ID='$post->post_ID' AND user_ID=".$post->user_ID."");
 				if($res->num_rows == 0)
 					{$color = "#c5c5c5"; $othercolor = "#eb3b60";}
 				else

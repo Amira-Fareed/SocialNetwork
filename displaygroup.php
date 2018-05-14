@@ -345,13 +345,13 @@ if(isset($_GET['deletecommentid']))
 
         $('[delete-postid]').click(function() {
                  var buttonid = $(this).attr('delete-postid');
-                 window.location.replace('profile.php?deletepostid='+ buttonid);
-                  });
+                 window.location.replace('displaygroup.php?deletepostid='+ buttonid);
+        });
 
         $('[delete-commentid]').click(function() {
                  var buttonid = $(this).attr('delete-commentid');
                  var postid = $(this).attr('postID');
-                 window.location.replace('profile.php?deletecommentid='+ buttonid +'&&postID='+postid);
+                 window.location.replace('displaygroup.php?deletecommentid='+ buttonid +'&&postID='+postid);
                              
         });
        

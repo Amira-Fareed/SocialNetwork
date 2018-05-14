@@ -48,12 +48,13 @@ if(isset($_POST['Creategroup']))
 
 <body onload="showModal()">
     <?php include "header.php";?>
-    <div class="container" style="margin-bottom: 60px; margin-top: 20px;">
+
+    <div class="container" style="margin-bottom: 60px; margin-top: 20px; ">
 
             <div class="row">
 
 
-            <div class="col-md-6">
+            <div class="col-md-7">
 
                     <button class="btn btn-default" type="button" style="width:100%;background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;" onclick="showNewGroupModal()">NEW GROUP</button>
                     <ul class="list-group"></ul>
@@ -78,12 +79,12 @@ if(isset($_POST['Creategroup']))
                 </div>
                 <div style="max-height: 400px; overflow-y: auto">
                         <form action="groups.php" method="post" enctype="multipart/form-data">
-                                <textarea name="groupname"  rows="3" cols="80"></textarea>
+                                <input name="groupname" style="width:100%;"></input>
 
 
                 
                 <div class="modal-footer">
-                    <input type="submit" name="Creategroup" value="Post" class="btn btn-default" type="button" style="background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;">
+                    <input type="submit" name="Creategroup" value="Submit" class="btn btn-default" type="button" style="background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:12px 28px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;">
                     <button class="btn btn-default" type="button" data-dismiss="modal">Close</button></div>
 
                     </form>
@@ -93,7 +94,7 @@ if(isset($_POST['Creategroup']))
         </div>
     </div>
 
-<div class="col-md-6">
+<div class="col-md-7">
     <ul class="list-group" class="groupList">
                         <li class="list-group-item"><span><strong>My Groups</strong></span> 
                         
@@ -111,6 +112,7 @@ if(isset($_POST['Creategroup']))
                 <p class="copyright">Social Network© 2018</p>
             </div>
         </footer>
+    </div>
     </div>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
