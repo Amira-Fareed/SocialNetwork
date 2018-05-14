@@ -115,6 +115,7 @@
         var result = $.trim(data);
         if(result == "ok") 
         {
+          confirm("Account Created Successfully!");
           window.location.href = "login.php";
         }
       });

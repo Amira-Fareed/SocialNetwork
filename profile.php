@@ -277,7 +277,7 @@ if(isset($_GET['deletecommentid']))
                     <h4 class="modal-title">New Post</h4>
                 </div>
                 <div style="max-height: 400px; overflow-y: auto">
-                        <form action="profile.php?username=<?php echo $username; ?>" method="post" enctype="multipart/form-data">
+                        <form action="profile.php?" method="post" enctype="multipart/form-data">
                                 <textarea name="postbody"  rows="8" cols="80"></textarea>
 
 

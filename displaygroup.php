@@ -29,21 +29,31 @@ $group_name = $group_name[0]->name;
 
 
 
+
 if(isset( $_POST['deleteuser']))
 { 
     $delete_userId= $_POST['deleteuser'] ;
     $message = group::delete_user($con,$currentUSerID,$delete_userId,$groupId);
+    echo '<script  type="text/javascript">confirm("'.$message.'");</script>';
 }
 
 if(isset( $_POST['adduser']))
 { 
     $add_userId= $_POST['adduser'] ;
     $message = group::add_user($con,$currentUSerID,$add_userId,$groupId);
+    echo '<script  type="text/javascript">confirm("'.$message.'");</script>';
 }
 
 $admin_ID = DB::select($con,"groups",array("adminID"),"groupID='".$groupId."'");
 $admin_ID = $admin_ID[0]->adminID;
 $group_users=group::get_users($con, $groupId);
+
+if(isset($_POST['RemoveGroup']))
+{
+    $message = group::delete_group($con,$currentUSerID,$groupId);
+    echo '<script  type="text/javascript">confirm("'.$message.'");</script>';
+    header("Location:groups.php");
+}
 
 /////////////checking if user is a member in the group ////////////
 $check =0;
@@ -62,7 +72,7 @@ if(isset($_POST['Createpost']))
 {
     $body=$_POST['postbody'];
     $message = posts::create_post($con, $currentUSerID, $body,$groupId);
-    echo '<script  type="text/javascript"> function showMessage() {confirm("'.$message.'");} showMessage();</script>';
+    echo '<script  type="text/javascript">confirm("'.$message.'");</script>';
 
 }
 
@@ -78,10 +88,8 @@ if(isset($_POST['Add']))
 
 }
 
-if(isset($_POST['remove'])) 
-{
 
-}
+
 
 if(isset($_POST['likepostid'])) {
     $like_postId= $_POST['likepostid'] ;
@@ -242,11 +250,13 @@ if(isset($_GET['deletecommentid']))
                                         $username=DB::select($con, "users", array("username"), "ID='".$group_users[$i]
                                         ."'");
                                         echo '<form validate method ="post"><li class="list-group-item" user-id ='. $group_users[$i].'><a href="profile.php?id='.$group_users[$i].'"> <span style="text-transform: capitalize;">'. $username[0]->username.'</span></a>';
-                                        if($currentUSerID== $admin_ID)
+                                        if($group_users[$i]!=$admin_ID)
                                         {
-                                            echo'<button style="float:right;" name="deleteuser" value ="'.$group_users[$i].'">Remove</button>';
+                                            if($currentUSerID== $admin_ID)
+                                            {
+                                                echo'<button style="float:right;" name="deleteuser" value ="'.$group_users[$i].'">Remove</button>';
+                                            }
                                         }
-
                                         echo'</li></form>';
 
                                         
@@ -255,6 +265,19 @@ if(isset($_GET['deletecommentid']))
                               
                         </li>
                     </ul>
+
+                    <div >
+                        <?php
+                            if($currentUSerID == $admin_ID)
+                            {
+                                
+                                    echo ' 
+                                    <form method="post"><button class="btn btn-default" validate method="post" action="profile.php"  type="submit" name="RemoveGroup" value="RemoveGroup" style="width:100%;background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;" id="RemoveGroup" >Remove Group</button></form>';
+                             
+
+                            }
+                        ?>
+                    </div>
                 </div>
 
 <!--////////////////////////////////////// Posts //////////////////////////////////////-->

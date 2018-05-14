@@ -23,7 +23,7 @@ if(isset($_POST['Creategroup']))
 {
     $groupname=$_POST['groupname'];
     $message = group::create_group($con ,$currentUSerID,$groupname);
-    echo '<script  type="text/javascript"> function showMessage() {confirm("'.$message.'");} showMessage();</script>';
+    echo '<script  type="text/javascript">confirm("'.$message.'");</script>';
 
 }
 ?>

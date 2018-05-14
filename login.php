@@ -36,13 +36,16 @@ if(isset($_POST['login']))
 				    }
 			        else
 			    		echo"<style type=\"text/css\"> #password{border-color: red; } </style>";
+                        echo'<script type="text/javascript">alert("Wrong password!");</script>';
 	        	}
        		}
 	   	}
         else
 			echo" <style type=\"text/css\"> #email{border-color: red; } </style>"; 
+            echo'<script type="text/javascript">alert("Wrong Email!");</script>';
 }
 ?>
+
 
 <!DOCTYPE html>
 <html>

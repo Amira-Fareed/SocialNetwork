@@ -110,7 +110,7 @@ class group
 				return false;
 		}
 		else
-			echo "log in to display you friends";
+			return "log in to display you friends";
 	}
 
 	public static function delete_user($con,$currentUSerID,$delete_userId,$groupId)
@@ -192,6 +192,16 @@ class group
 			}
 		}
 	
+
+	public static function delete_group($con,$currentUSerID,$groupId)
+	{
+
+			DB::delete($con, "group_users", array("group_ID" =>$groupId));
+			DB::delete($con, "groups", array("groupID" =>$groupId));
+			DB::delete($con, "posts", array("group_ID" =>$groupId));
+			
+			return "Group is deleted succesfully";
+	}
 
 }
 
