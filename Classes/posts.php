@@ -113,9 +113,9 @@ class posts
 	                             </form>
 
 								<form method=\"post\" >
-
-				                <textarea rows=\"2\"  style=\"width:80%; margin-top: 5px; resize:vertical; box-sizing: border-box; border: 2px solid #ccc; border-radius: 4px;\" name=\"comment_body\"></textarea>
-				                <button style=\"margin-left: 20px; margin-bottom: 20px; background-image:url(&quot;none&quot;); background-color:#da052b;color:#fff; border:none;box-shadow:none;text-shadow:none;opacity:0.9;\" type=\"submit\" name=\"comment\" value=".$post->post_ID." class=\"btn btn-default comment\">Comment</button>
+								<div style=\"width: 80%;margin-top: 5px; float:left;\"><p  class=\"lead emoji-picker-container\">
+				                <textarea data-emojiable=\"true\" data-emoji-input=\"unicode\" rows=\"2\"  style=\"width:80%;  resize:vertical; box-sizing: border-box; border: 2px solid #ccc; border-radius: 4px;\" name=\"comment_body\" class=\"form-control textarea-control\"></textarea></p></div>
+				                <button style=\"margin-left: 20px; margin-top: 25px; background-image:url(&quot;none&quot;); background-color:#da052b;color:#fff; border:none;box-shadow:none;text-shadow:none;opacity:0.9;\" type=\"submit\" name=\"comment\" value=".$post->post_ID." class=\"btn btn-default comment\">Comment</button>
 				                </form>     
 
 	                             </blockquote>
@@ -123,6 +123,10 @@ class posts
 
 	                             ";
                 }
+
+
+                                    
+                
 
                 else
                 {
@@ -136,8 +140,10 @@ class posts
 	                           <form class=\"Comments\" method=\"post\" style=\" display: inline-block;\"> <button class=\"btn btn-default comment\" name=\"comments\" type=\"submit\" value=".$post->post_ID." style=\"color:#eb3b60;background-image:url(&quot;none&quot;);background-color:transparent;\"><i class=\"glyphicon glyphicon-flash\" style=\"color:#f9d616;\"></i><span style=\"color:#f9d616;\">".($post->comments)." Comments</span></button></footer></form>
 
 	                           <form method=\"post\" >
-				                <textarea rows=\"2\"  style=\"width:80%; resize:vertical; box-sizing: border-box; border: 2px solid #ccc; border-radius: 4px;\" name=\"comment_body\"></textarea>
-				                <button style=\"margin-left: 20px; margin-bottom: 20px; background-image:url(&quot;none&quot;); background-color:#da052b;color:#fff; border:none;box-shadow:none;text-shadow:none;opacity:0.9;\" type=\"submit\" name=\"comment\" value=".$post->post_ID." class=\"btn btn-default comment\">Comment</button></form>
+								<div style=\"width: 80%;margin-top: 5px; float:left;\"><p  class=\"lead emoji-picker-container\">
+				                <textarea data-emojiable=\"true\" data-emoji-input=\"unicode\" rows=\"2\"  style=\"width:80%;  resize:vertical; box-sizing: border-box; border: 2px solid #ccc; border-radius: 4px;\" name=\"comment_body\" class=\"form-control textarea-control\"></textarea></p></div>
+				                <button style=\"margin-left: 20px; margin-top: 25px; background-image:url(&quot;none&quot;); background-color:#da052b;color:#fff; border:none;box-shadow:none;text-shadow:none;opacity:0.9;\" type=\"submit\" name=\"comment\" value=".$post->post_ID." class=\"btn btn-default comment\">Comment</button>
+				                </form> 
 
 	                             </blockquote>
 	                           ";

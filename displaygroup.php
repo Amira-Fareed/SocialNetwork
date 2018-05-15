@@ -210,6 +210,8 @@ if(isset($_GET['deletecommentid']))
     <link rel="stylesheet" href="assets/css/Navigation-Clean1.css">
     <link rel="stylesheet" href="assets/css/styles.css">
     <link rel="stylesheet" href="assets/css/untitled.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+  <link href="lib/css/emoji.css" rel="stylesheet">
 </head>
 
 <body onload="showModal()">
@@ -308,16 +310,21 @@ if(isset($_GET['deletecommentid']))
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
                     <h4 class="modal-title">New Post</h4>
                 </div>
-                <div style="max-height: 400px; overflow-y: auto">
-                        <form action="#" method="post" enctype="multipart/form-data">
-                                <textarea name="postbody"  rows="8" cols="80"></textarea>
+            
+                        <form  method="post" enctype="multipart/form-data">
+                          <div style="height: 250px; max-height: 400px; overflow-y: auto">      
+                                
+                                    <p style="width: 98%;margin: 0 auto;" class="lead emoji-picker-container">
+                                      <textarea style="height: 150px; " name="postbody" class="form-control textarea-control" rows="8" cols="75" placeholder="What's on your mind ?" data-emojiable="true" data-emoji-input="unicode"></textarea>
+                                    </p>
+            
+                           </div>     
 
-                </div>
                 <div class="modal-footer">
                     <input type="submit" name="Createpost" value="Post" class="btn btn-default" type="button" style="background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;">
                     <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
                     </form>
-                </div>
+                
             </div>
         </div>
     </div>
@@ -382,6 +389,28 @@ if(isset($_GET['deletecommentid']))
         {
             $('#Modal').modal('show');
         } 
+    </script>
+
+            <!-- Begin emoji-picker JavaScript -->
+    <script src="lib/js/config.js"></script>
+    <script src="lib/js/util.js"></script>
+    <script src="lib/js/jquery.emojiarea.js"></script>
+    <script src="lib/js/emoji-picker.js"></script>
+    <!-- End emoji-picker JavaScript -->
+
+    <script>
+      $(function() {
+        // Initializes and creates emoji set from sprite sheet
+        window.emojiPicker = new EmojiPicker({
+          emojiable_selector: '[data-emojiable=true]',
+          assetsPath: 'lib/img/',
+          popupButtonClasses: 'fa fa-smile-o'
+        });
+        // Finds all elements with `emojiable_selector` and converts them to rich emoji input fields
+        // You may want to delay this step if you have dynamically created input fields that appear later in the loading process
+        // It can be called as many times as necessary; previously converted input fields will not be converted again
+        window.emojiPicker.discover();
+      });
     </script>
 </body>
 
