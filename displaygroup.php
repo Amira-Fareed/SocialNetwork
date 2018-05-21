@@ -214,7 +214,7 @@ if(isset($_GET['deletecommentid']))
   <link href="lib/css/emoji.css" rel="stylesheet">
 </head>
 
-<body onload="showModal()">
+<body>
 
     <?php include "header.php";?>
     <div class="container" style="margin-bottom: 60px;">
@@ -321,8 +321,9 @@ if(isset($_GET['deletecommentid']))
                            </div>     
 
                 <div class="modal-footer">
-                    <input type="submit" name="Createpost" value="Post" class="btn btn-default" type="button" style="background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;">
-                    <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+                    <input type="submit" name="Createpost" value="Post" class="btn btn-default" type="button" style="background-image:url(&quot;none&quot;);background-color:#da052b;color:#fff;padding:16px 32px;margin:0px 0px 6px;border:none;box-shadow:none;text-shadow:none;opacity:0.9;text-transform:uppercase;font-weight:bold;font-size:13px;letter-spacing:0.4px;line-height:1;outline:none;"><button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+                    </div>
+                    
                     </form>
                 
             </div>
@@ -356,6 +357,7 @@ if(isset($_GET['deletecommentid']))
             </div>
         </footer>
     </div>
+    
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
     <script src="assets/js/bs-animation.js"></script>
