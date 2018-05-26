@@ -29,6 +29,8 @@ class posts
 		{
 			if(DB::delete($con, "posts", array("post_ID"=>$post_id))===true)
 				{
+					DB::delete($con, "comments", array("post_id"=>$post_id));
+					DB::delete($con, "post_likes", array("post_ID"=>$post_id));
 					return "post deleted successfuly!";
 					
 				}
@@ -102,7 +104,7 @@ class posts
 
 				if($key == $current_User)
 				{
-					echo"<blockquote><div> <a href=\"profile.php?id=".$key."\"> <h4 style=\" color:#337ab7; width:90%; text-transform: capitalize; font-size: 88%;\"> ~ ".$user_names->username."</h4> </a> <button type=\"button\" class=\"close deletepost\" data-dismiss=\"modal\" aria-label=\"Close\" delete-postid=".$post->post_ID ."><span aria-hidden=\"true\" style=\" font-size : 60%; color:red;\">Remove</span></button></button> </div> <p>".($post->body)."</p><footer>Posted on ".($post->posted_at)." 
+					echo"<blockquote><div> <a href=\"profile.php?id=".$key."\"> <h4 style=\" color:#337ab7; width:90%; text-transform: capitalize; font-size: 88%;\"> ~ ".$user_names->username."</h4> </a> <button type=\"button\" class=\"close deletepost\" data-dismiss=\"modal\" aria-label=\"Close\" groupid=".$group_id." delete-postid=".$post->post_ID ."><span aria-hidden=\"true\" style=\" font-size : 60%; color:red;\">Remove</span></button></button> </div> <p>".($post->body)."</p><footer>Posted on ".($post->posted_at)." 
 	                          <form validate method=\"post\" style=\" display: inline-block;\" >
 	                          <button onmouseover=\"this.style.color='".$othercolor."'\" onmouseout=\"this.style.color='".$color."'\" class=\"btn btn-default\" type=\"submit\" name=\"likepostid\" value=".$post->post_ID ." style=\"color:".$color."; background-image:url(&quot;none&quot;);background-color:transparent; \"> <i class=\"glyphicon glyphicon-heart\" data-aos=\"flip-right\" ></i><span></span></button></form>
 

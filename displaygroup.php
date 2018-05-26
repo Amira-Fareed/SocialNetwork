@@ -89,6 +89,20 @@ if(isset($_POST['Add']))
 }
 
 
+if(isset( $_GET['deletepostid']))
+{ 
+    $delete_postId= $_GET['deletepostid'] ;
+    $message = posts::delete_post($con,$currentUSerID,$delete_postId);
+}
+
+if(isset($_GET['deletecommentid']))
+{
+    $delete_commentId= $_GET['deletecommentid'] ;
+    $commentPostID = $_GET['postID'] ;
+    $message = posts::deleteComment ($con, $delete_commentId ,$commentPostID);
+}
+
+
 
 
 if(isset($_POST['likepostid'])) {
@@ -121,7 +135,7 @@ if(isset($_POST['comments']))
                         {
                               if($Comment['ID']==$currentUSerID)
                             {
-                                echo "<blockquote><div> <a href=\"profile.php?id=".$Comment['ID']."\"> <h4 style=\" color:#337ab7; width:90%; text-transform: capitalize; font-size: 88%;\"> ~ ".$Comment['username']."</h4> </a> <button type=\"button\" class=\"close deletepost\" data-dismiss=\"modal\" aria-label=\"Close\" delete-commentid=".$Comment['comment_id'] ." postID = ".$post_id."><span aria-hidden=\"true\" style=\" font-size : 60%; color:red;\">Remove</span></button></button> </div> <p>".($Comment['body'])."</p><footer>Posted on ".
+                                echo "<blockquote><div> <a href=\"profile.php?id=".$Comment['ID']."\"> <h4 style=\" color:#337ab7; width:90%; text-transform: capitalize; font-size: 88%;\"> ~ ".$Comment['username']."</h4> </a> <button type=\"button\" class=\"close \" data-dismiss=\"modal\" aria-label=\"Close\" groupid=".$groupId." delete-commentid=".$Comment['comment_id'] ." postID = ".$post_id."><span aria-hidden=\"true\" style=\" font-size : 60%; color:red;\">Remove</span></button></button> </div> <p>".($Comment['body'])."</p><footer>Posted on ".
                                 $Comment['posted_at']."</blockquote><br> ";
                             }
 
@@ -179,18 +193,7 @@ if(isset($_POST['likers']))
 
 
     }
-if(isset( $_GET['deletepostid']))
-{ 
-    $delete_postId= $_GET['deletepostid'] ;
-    $message = posts::delete_post($con,$currentUSerID,$delete_postId);
-}
 
-if(isset($_GET['deletecommentid']))
-{
-    $delete_commentId= $_GET['deletecommentid'] ;
-    $commentPostID = $_GET['postID'] ;
-    $message = posts::deleteComment ($con, $delete_commentId ,$commentPostID);
-}
 ?>
 
 <!DOCTYPE html>
@@ -214,7 +217,7 @@ if(isset($_GET['deletecommentid']))
   <link href="lib/css/emoji.css" rel="stylesheet">
 </head>
 
-<body>
+<body onload="showModal()">
 
     <?php include "header.php";?>
     <div class="container" style="margin-bottom: 60px;">
@@ -374,23 +377,26 @@ if(isset($_GET['deletecommentid']))
                 $('#add_users').modal('show')
         }
 
+        function showModal() 
+        {
+            $('#Modal').modal('show');
+        }
 
         $('[delete-postid]').click(function() {
                  var buttonid = $(this).attr('delete-postid');
-                 window.location.replace('displaygroup.php?deletepostid='+ buttonid);
+                 var grpID = $(this).attr('groupid');
+                 window.location.replace('displaygroup.php?id='+ grpID +'&&deletepostid='+ buttonid);
         });
 
         $('[delete-commentid]').click(function() {
                  var buttonid = $(this).attr('delete-commentid');
                  var postid = $(this).attr('postID');
-                 window.location.replace('displaygroup.php?deletecommentid='+ buttonid +'&&postID='+postid);
+                 var grpID = $(this).attr('groupid');
+                 window.location.replace('displaygroup.php?id='+grpID+'&&deletecommentid='+ buttonid +'&&postID='+postid);
                              
         });
        
-        function showModal() 
-        {
-            $('#Modal').modal('show');
-        } 
+         
     </script>
 
             <!-- Begin emoji-picker JavaScript -->
